@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist/js",
+        "target": "ES5",
+        "module": "ES2015",
+        "esModuleInterop": true,
+        "lib": [ "DOM", "ES5" ],
+        "sourceMap": true,
+    },
+    "include": [
+        "src/**/*"
+    ]
+}
