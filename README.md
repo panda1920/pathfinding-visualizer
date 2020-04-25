@@ -1,4 +1,4 @@
-##Project overview
+## Project overview
 Visualizes how pathfinding algorithm works.
 A practice project to familiarize myself with webpack and typescript.
 
