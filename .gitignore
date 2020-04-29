@@ -4,5 +4,5 @@
 # editor settings
 *.code-workspace
 
-# intermediate files during build
-*js.map
+# files built
+dist/js

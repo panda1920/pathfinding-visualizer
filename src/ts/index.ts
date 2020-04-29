@@ -1,11 +1,12 @@
 import GridGraph from './graph';
 
-const $inputWeight: HTMLInputElement = document.querySelector('#input-width');
-const $inputHeight: HTMLInputElement = document.querySelector('#input-height');
-const $buttonChangeDimension: HTMLElement = document.querySelector('#change-dimension');
-const $boxes: HTMLElement = document.querySelector('#boxes');
+const $inputWeight = document.querySelector('#input-width') as HTMLInputElement;
+const $inputHeight = document.querySelector('#input-height') as HTMLInputElement;
+const $buttonChangeDimension = document.querySelector('#change-dimension') as HTMLElement;
+const $boxes = document.querySelector('#boxes') as HTMLElement;
 
-const appState = {
+interface AppState { graph: GridGraph|null }
+const appState: AppState = {
     graph: null,
 };
 

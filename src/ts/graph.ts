@@ -1,12 +1,12 @@
 class GraphNode {
-    id: number;
-    edges: GraphEdge[];
-    width = 32;
-    height = 32;
+    readonly edges: GraphEdge[];
+    readonly html: HTMLElement;
+    private readonly width = 32;
+    private readonly height = 32;
     
-    constructor(id: number) {
-        this.id = id;
+    constructor(public readonly id: number) {
         this.edges = [];
+        this.html = this.createHTML();
     }
     
     createHTML(): HTMLElement {
@@ -25,16 +25,48 @@ class GraphNode {
     addEdge(edge: GraphEdge): void {
         this.edges.push(edge);
     }
+
+    isAttachedTo(node: GraphNode): boolean {
+        if ( this.getAttachedNodes().find(attachedNode => attachedNode.id === node.id) )
+            return true;
+        else
+            return false;
+    }
+
+    getAttachedNodes(): GraphNode[] {
+        return this.edges.map(edge => {
+            return edge.nodes.filter(node => node.id !== this.id)[0];
+        });
+    }
+}
+
+// A class that represents nodes in a grid
+// Diffence between a generic node is that
+// GridNode is aware of the fact that it is part of a grid,
+// that it has maximum of 4 edges
+class GridNode extends GraphNode {
+    private gridWidth: number;
+    private gridHeight: number;
+
+    constructor(id: number, gridWidth: number, gridHeight: number) {
+        super(id);
+        this.gridWidth = gridWidth;
+        this.gridHeight = gridHeight;
+    }
+
+    // getLeftEdge(): GraphEdge|null {
+    //     const leftNodeId = this.id - 1;
+    //     this.edges.find(edge => {
+    //         edge.nodes[0] == 
+    //     })
+    // }
 }
 
 class GraphEdge {
-    nodes: GraphNode[];
     isBlocked: boolean;
 
-    constructor(...nodes: GraphNode[]) {
-        if (nodes.length !== 2)
-            throw 'GraphEdge must be related to 2 nodes';
-        this.nodes = nodes;
+    constructor(public readonly nodes: [GraphNode, GraphNode]) {
+
     }
 }
 
@@ -58,7 +90,7 @@ class GridGraph {
         for (let y = 0; y < this.height; ++y) {
             for (let x = 0; x < this.width; ++x) {
                 const nodeId = x + (y * this.width);
-                this.nodes.push( new GraphNode(nodeId) );
+                this.nodes.push( new GridNode(nodeId, this.width, this.height) );
             }
         }
     }
@@ -86,7 +118,7 @@ class GridGraph {
 
     createEdge(node: GraphNode, connectedTo: GraphNode[]): void {
         connectedTo.forEach(connectedNode => {
-            const edge = new GraphEdge(node, connectedNode);
+            const edge = new GraphEdge([node, connectedNode]);
             node.addEdge(edge);
             connectedNode.addEdge(edge);
             this.edges.push(edge);
@@ -98,7 +130,7 @@ class GridGraph {
             if (idx % this.width === 0 && idx !== 0) {
                 html.appendChild( document.createElement('br') );
             }
-            html.appendChild( this.addClickHandler( node.createHTML() ) );
+            html.appendChild( this.addClickHandler( node.html ) );
         });
     }
 

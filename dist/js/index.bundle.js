@@ -95,120 +95,168 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-var GraphNode = /** @class */ (function () {
-    function GraphNode(id) {
-        this.width = 32;
-        this.height = 32;
-        this.id = id;
-        this.edges = [];
-    }
-    GraphNode.prototype.createHTML = function () {
-        var html = document.createElement('div');
-        html.id = "" + this.id;
-        html.style.display = 'inline-block';
-        html.style.width = this.width + "px";
-        html.style.height = this.height + "px";
-        html.style.border = "1px solid black";
-        html.style.borderCollapse = 'collapse';
-        html.innerHTML = this.id.toString();
-        return html;
-    };
-    GraphNode.prototype.addEdge = function (edge) {
-        this.edges.push(edge);
-    };
-    return GraphNode;
-}());
-var GraphEdge = /** @class */ (function () {
-    function GraphEdge() {
-        var nodes = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            nodes[_i] = arguments[_i];
-        }
-        if (nodes.length !== 2)
-            throw 'GraphEdge must be related to 2 nodes';
-        this.nodes = nodes;
-    }
-    return GraphEdge;
-}());
-var GridGraph = /** @class */ (function () {
-    function GridGraph(width, height) {
-        var _this = this;
-        this.clickHandler = function (e) {
-            var target = e.target;
-            var id = parseInt(target.id);
-            var node = _this.nodes[id];
-            console.log(node);
-        };
-        this.width = width;
-        this.height = height;
-        this.nodes = [];
-        this.edges = [];
-        this.createNodes();
-        this.createEdges();
-    }
-    GridGraph.prototype.createNodes = function () {
-        for (var y = 0; y < this.height; ++y) {
-            for (var x = 0; x < this.width; ++x) {
-                var nodeId = x + (y * this.width);
-                this.nodes.push(new GraphNode(nodeId));
-            }
-        }
-    };
-    GridGraph.prototype.createEdges = function () {
-        var _this = this;
-        var isFirstRow = function (node) {
-            return node.id < _this.width;
-        };
-        var isFirstCol = function (node) {
-            return node.id % _this.width === 0;
-        };
-        this.nodes.forEach(function (node) {
-            var connectedTo = [];
-            if (!isFirstRow(node)) {
-                var topNode = _this.nodes[node.id - _this.width];
-                connectedTo.push(topNode);
-            }
-            if (!isFirstCol(node)) {
-                var leftNode = _this.nodes[node.id - 1];
-                connectedTo.push(leftNode);
-            }
-            _this.createEdge(node, connectedTo);
-        });
-    };
-    GridGraph.prototype.createEdge = function (node, connectedTo) {
-        var _this = this;
-        connectedTo.forEach(function (connectedNode) {
-            var edge = new GraphEdge(node, connectedNode);
-            node.addEdge(edge);
-            connectedNode.addEdge(edge);
-            _this.edges.push(edge);
-        });
-    };
-    GridGraph.prototype.drawGraphOnHtml = function (html) {
-        var _this = this;
-        this.nodes.forEach(function (node, idx) {
-            if (idx % _this.width === 0 && idx !== 0) {
-                html.appendChild(document.createElement('br'));
-            }
-            html.appendChild(_this.addClickHandler(node.createHTML()));
-        });
-    };
-    GridGraph.prototype.addClickHandler = function (html) {
-        html.addEventListener('click', this.clickHandler);
-        // html.addEventListener('click', (e) => {
-        //     const target = e.target as HTMLElement;
-        //     const id = parseInt( target.id );
-        //     const node = this.nodes[id];
-        //     console.log(node);
-        // });
-        // above code generates new function for every node
-        // thought it would be more efficient to re-use the same function
-        return html;
-    };
-    return GridGraph;
-}());
-/* harmony default export */ __webpack_exports__["default"] = (GridGraph);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var GraphNode = /*#__PURE__*/function () {
+  function GraphNode(id) {
+    _classCallCheck(this, GraphNode);
+
+    this.width = 32;
+    this.height = 32;
+    this.id = id;
+    this.edges = [];
+    this.html = this.createHTML();
+  }
+
+  _createClass(GraphNode, [{
+    key: "createHTML",
+    value: function createHTML() {
+      var html = document.createElement('div');
+      html.id = "".concat(this.id);
+      html.style.display = 'inline-block';
+      html.style.width = "".concat(this.width, "px");
+      html.style.height = "".concat(this.height, "px");
+      html.style.border = "1px solid black";
+      html.style.borderCollapse = 'collapse';
+      html.innerHTML = this.id.toString();
+      return html;
+    }
+  }, {
+    key: "addEdge",
+    value: function addEdge(edge) {
+      this.edges.push(edge);
+    }
+  }, {
+    key: "isAttachedTo",
+    value: function isAttachedTo(node) {
+      this.edges.forEach(function (edge) {
+        if (edge.nodes.find(function (edgeNode) {
+          return edgeNode.id === node.id;
+        })) return true;
+      });
+      return false;
+    }
+  }]);
+
+  return GraphNode;
+}();
+
+var GraphEdge = function GraphEdge(nodes) {
+  _classCallCheck(this, GraphEdge);
+
+  this.nodes = nodes;
+};
+
+var GridGraph = /*#__PURE__*/function () {
+  function GridGraph(width, height) {
+    var _this = this;
+
+    _classCallCheck(this, GridGraph);
+
+    this.clickHandler = function (e) {
+      var target = e.target;
+      var id = parseInt(target.id);
+      var node = _this.nodes[id];
+      console.log(node);
+    };
+
+    this.width = width;
+    this.height = height;
+    this.nodes = [];
+    this.edges = [];
+    this.createNodes();
+    this.createEdges();
+  }
+
+  _createClass(GridGraph, [{
+    key: "createNodes",
+    value: function createNodes() {
+      for (var y = 0; y < this.height; ++y) {
+        for (var x = 0; x < this.width; ++x) {
+          var nodeId = x + y * this.width;
+          this.nodes.push(new GraphNode(nodeId));
+        }
+      }
+    }
+  }, {
+    key: "createEdges",
+    value: function createEdges() {
+      var _this2 = this;
+
+      var isFirstRow = function isFirstRow(node) {
+        return node.id < _this2.width;
+      };
+
+      var isFirstCol = function isFirstCol(node) {
+        return node.id % _this2.width === 0;
+      };
+
+      this.nodes.forEach(function (node) {
+        var connectedTo = [];
+
+        if (!isFirstRow(node)) {
+          var topNode = _this2.nodes[node.id - _this2.width];
+          connectedTo.push(topNode);
+        }
+
+        if (!isFirstCol(node)) {
+          var leftNode = _this2.nodes[node.id - 1];
+          connectedTo.push(leftNode);
+        }
+
+        _this2.createEdge(node, connectedTo);
+      });
+    }
+  }, {
+    key: "createEdge",
+    value: function createEdge(node, connectedTo) {
+      var _this3 = this;
+
+      connectedTo.forEach(function (connectedNode) {
+        var edge = new GraphEdge([node, connectedNode]);
+        node.addEdge(edge);
+        connectedNode.addEdge(edge);
+
+        _this3.edges.push(edge);
+      });
+    }
+  }, {
+    key: "drawGraphOnHtml",
+    value: function drawGraphOnHtml(html) {
+      var _this4 = this;
+
+      this.nodes.forEach(function (node, idx) {
+        if (idx % _this4.width === 0 && idx !== 0) {
+          html.appendChild(document.createElement('br'));
+        }
+
+        html.appendChild(_this4.addClickHandler(node.html));
+      });
+    }
+  }, {
+    key: "addClickHandler",
+    value: function addClickHandler(html) {
+      html.addEventListener('click', this.clickHandler); // html.addEventListener('click', (e) => {
+      //     const target = e.target as HTMLElement;
+      //     const id = parseInt( target.id );
+      //     const node = this.nodes[id];
+      //     console.log(node);
+      // });
+      // above code generates new function for every node
+      // thought it would be more efficient to re-use the same function
+
+      return html;
+    }
+  }]);
+
+  return GridGraph;
+}();
+
+/* harmony default export */ __webpack_exports__["default"] = (GridGraph);
 
 /***/ }),
 
@@ -228,16 +276,15 @@ var $inputHeight = document.querySelector('#input-height');
 var $buttonChangeDimension = document.querySelector('#change-dimension');
 var $boxes = document.querySelector('#boxes');
 var appState = {
-    graph: null,
+  graph: null
 };
 $buttonChangeDimension.addEventListener('click', function () {
-    $boxes.innerHTML = '';
-    var width = parseInt($inputWeight.value);
-    var height = parseInt($inputHeight.value);
-    appState.graph = new _graph__WEBPACK_IMPORTED_MODULE_0__["default"](width, height);
-    appState.graph.drawGraphOnHtml($boxes);
+  $boxes.innerHTML = '';
+  var width = parseInt($inputWeight.value);
+  var height = parseInt($inputHeight.value);
+  appState.graph = new _graph__WEBPACK_IMPORTED_MODULE_0__["default"](width, height);
+  appState.graph.drawGraphOnHtml($boxes);
 });
-
 
 /***/ })
 

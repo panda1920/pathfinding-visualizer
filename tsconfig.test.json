@@ -2,11 +2,12 @@
     "compilerOptions": {
         "outDir": "./dist/js",
         "target": "ESNext",
-        "module": "ES2015",
+        "module": "CommonJS",
         "lib": [ "DOM", "ESNext" ],
         "esModuleInterop": true,
         "sourceMap": true,
-        "noImplicitAny": true
+        "noImplicitAny": true,
+        "types": [ "jest" ]
     },
     "include": [
         "src/ts/*"
