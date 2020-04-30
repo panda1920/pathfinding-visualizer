@@ -1,14 +1,40 @@
 import GridGraph from './graph';
+import { Algorithm, DijkstraAlgorithm } from './algorithm';
+import AlgoRunner from './runner';
 
 const $inputWeight = document.querySelector('#input-width') as HTMLInputElement;
 const $inputHeight = document.querySelector('#input-height') as HTMLInputElement;
 const $buttonChangeDimension = document.querySelector('#change-dimension') as HTMLElement;
+const $buttonReset = document.querySelector('#reset') as HTMLElement;
 const $boxes = document.querySelector('#boxes') as HTMLElement;
 
-interface AppState { graph: GridGraph|null }
+enum AlgoChoice {
+    Dijkstra,
+}
+interface AppState {
+    graph: GridGraph|null;
+    algoChoice: AlgoChoice;
+    runner: AlgoRunner;
+}
 const appState: AppState = {
     graph: null,
+    algoChoice: AlgoChoice.Dijkstra,
+    runner: null,
 };
+
+// returns a factory function that produces concrete algorithm object
+function algoFactory(appState: AppState): () => Algorithm {
+    return (): Algorithm => {
+        switch(appState.algoChoice) {
+            case AlgoChoice.Dijkstra: {
+                const [ firstNode, secondNode ] = appState.graph.nodesClicked;
+                return new DijkstraAlgorithm(appState.graph, firstNode, secondNode);
+            }
+            default:
+                throw 'Undefined algorithm was chosen';
+        }
+    };
+}
 
 $buttonChangeDimension.addEventListener('click', () => {
     $boxes.innerHTML = '';
@@ -18,4 +44,10 @@ $buttonChangeDimension.addEventListener('click', () => {
 
     appState.graph = new GridGraph(width, height);
     appState.graph.drawGraphOnHtml($boxes);
+    appState.runner = new AlgoRunner(appState.graph, algoFactory(appState));
+    appState.graph.setRunCallback( () => appState.runner.run() );
+});
+
+$buttonReset.addEventListener('click', () => {
+    appState.graph.reset();
 });

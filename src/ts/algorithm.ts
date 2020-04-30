@@ -49,10 +49,10 @@ class DijkstraAlgorithm extends Algorithm {
     private getCurrentNode(): number {
         let minId: number;
         let minDistance = Infinity;
-        const isUnvisited = (nodeId: number): boolean => this.unvisitedNodes.has(nodeId);
+        const isNotVisited = (nodeId: number): boolean => this.unvisitedNodes.has(nodeId);
 
         this.shortestDistances.forEach((dist, nodeId) => {
-            if ( isUnvisited(nodeId) && dist < minDistance ) {
+            if ( isNotVisited(nodeId) && dist < minDistance ) {
                 minId = nodeId;
                 minDistance = dist;
             }

@@ -1,25 +1,8 @@
 class GraphNode {
     readonly edges: GraphEdge[];
-    readonly html: HTMLElement;
-    private readonly width = 32;
-    private readonly height = 32;
     
     constructor(public readonly id: number) {
         this.edges = [];
-        this.html = this.createHTML();
-    }
-    
-    createHTML(): HTMLElement {
-        const html = document.createElement('div');
-        html.id = `${this.id}`;
-        html.style.display = 'inline-block';
-        html.style.width = `${this.width}px`;
-        html.style.height = `${this.height}px`;
-        html.style.border = `1px solid black`;
-        html.style.borderCollapse = 'collapse';
-        html.innerHTML = this.id.toString();
-
-        return html;
     }
 
     addEdge(edge: GraphEdge): void {
@@ -41,25 +24,54 @@ class GraphNode {
 }
 
 // A class that represents nodes in a grid
-// Diffence between a generic node is that
+// Diffence between a GraphNode is that
 // GridNode is aware of the fact that it is part of a grid,
-// that it has maximum of 4 edges
+// and that it is going to be represented visually
 class GridNode extends GraphNode {
-    private gridWidth: number;
-    private gridHeight: number;
+    readonly html: HTMLElement;
+    private readonly width = 32;
+    private readonly height = 32;
 
-    constructor(id: number, gridWidth: number, gridHeight: number) {
+    constructor(
+        id: number,
+        private readonly gridWidth: number,
+        private readonly gridHeight: number,
+    ) {
         super(id);
-        this.gridWidth = gridWidth;
-        this.gridHeight = gridHeight;
+
+        this.html = this.createHTML();
     }
 
-    // getLeftEdge(): GraphEdge|null {
-    //     const leftNodeId = this.id - 1;
-    //     this.edges.find(edge => {
-    //         edge.nodes[0] == 
-    //     })
-    // }
+    private createHTML(): HTMLElement {
+        const html = document.createElement('div');
+        html.id = `${this.id}`;
+        html.className = 'node';
+        html.style.display = 'inline-block';
+        html.style.width = `${this.width}px`;
+        html.style.height = `${this.height}px`;
+        html.style.border = `1px solid black`;
+        html.style.borderCollapse = 'collapse';
+        html.innerHTML = this.id.toString();
+
+        return html;
+    }
+
+    visited(): void {
+        const visitedClassname = 'visited';
+        this.html.classList.add(visitedClassname);
+    }
+
+    clicked(): void {
+        const clickedClassname = 'clicked';
+        this.html.classList.toggle(clickedClassname);
+    }
+
+    reset(): void {
+        const visitedClassname = 'visited';
+        const clickedClassname = 'clicked';
+
+        this.html.classList.remove(visitedClassname, clickedClassname);
+    }
 }
 
 class GraphEdge {
@@ -73,20 +85,23 @@ class GraphEdge {
 class GridGraph {
     width: number;
     height: number;
-    nodes: GraphNode[];
+    nodes: GridNode[];
     edges: GraphEdge[];
+    nodesClicked: number[];
+    private runCallback: () => void = null;
 
     constructor(width: number, height: number) {
         this.width = width;
         this.height = height;
         this.nodes = [];
         this.edges = [];
+        this.nodesClicked = [];
 
         this.createNodes();
         this.createEdges();
     }
 
-    createNodes(): void {
+    private createNodes(): void {
         for (let y = 0; y < this.height; ++y) {
             for (let x = 0; x < this.width; ++x) {
                 const nodeId = x + (y * this.width);
@@ -95,7 +110,7 @@ class GridGraph {
         }
     }
 
-    createEdges(): void {
+    private createEdges(): void {
         const isFirstRow = (node: GraphNode): boolean =>
             node.id < this.width;
         const isFirstCol = (node: GraphNode): boolean =>
@@ -116,7 +131,7 @@ class GridGraph {
         });
     }
 
-    createEdge(node: GraphNode, connectedTo: GraphNode[]): void {
+    private createEdge(node: GraphNode, connectedTo: GraphNode[]): void {
         connectedTo.forEach(connectedNode => {
             const edge = new GraphEdge([node, connectedNode]);
             node.addEdge(edge);
@@ -134,24 +149,38 @@ class GridGraph {
         });
     }
 
-    addClickHandler(html: HTMLElement): HTMLElement {
+    private addClickHandler(html: HTMLElement): HTMLElement {
         html.addEventListener('click', this.clickHandler);
-        // html.addEventListener('click', (e) => {
-        //     const target = e.target as HTMLElement;
-        //     const id = parseInt( target.id );
-        //     const node = this.nodes[id];
-        //     console.log(node);
-        // });
-        // above code generates new function for every node
-        // thought it would be more efficient to re-use the same function
         return html;
     }
 
-    clickHandler = (e: Event): void => {
+    private clickHandler = (e: Event): void => {
+        if (this.nodesClicked.length >= 2)
+            return;
+        
         const target = e.target as HTMLElement;
         const id = parseInt( target.id );
         const node = this.nodes[id];
-        console.log(node);
+        
+        if (this.nodesClicked.indexOf(id) === -1)
+            this.nodesClicked.push(id);
+        else
+            this.nodesClicked = this.nodesClicked.filter(nodeId => nodeId !== id);
+        node.clicked();
+
+        if (this.nodesClicked.length == 2)
+            this.runCallback && this.runCallback();
+    }
+
+    reset(): void {
+        this.nodesClicked = [];
+        this.nodes.forEach(node => {
+            node.reset();
+        });
+    }
+
+    setRunCallback(callback: () => void): void {
+        this.runCallback = callback;
     }
 }
 
