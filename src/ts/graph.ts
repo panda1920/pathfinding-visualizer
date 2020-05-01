@@ -1,4 +1,4 @@
-class GraphNode {
+export class GraphNode {
     readonly edges: GraphEdge[];
     
     constructor(public readonly id: number) {
@@ -29,8 +29,10 @@ class GraphNode {
 // and that it is going to be represented visually
 class GridNode extends GraphNode {
     readonly html: HTMLElement;
-    private readonly width = 32;
-    private readonly height = 32;
+    private readonly NODE_WIDTH = 32;
+    private readonly NODE_HEIGHT = 32;
+    private readonly NEW_EXPIRE_DURATION = 200;
+    private timerJobId: any = null;
 
     constructor(
         id: number,
@@ -47,8 +49,8 @@ class GridNode extends GraphNode {
         html.id = `${this.id}`;
         html.className = 'node';
         html.style.display = 'inline-block';
-        html.style.width = `${this.width}px`;
-        html.style.height = `${this.height}px`;
+        html.style.width = `${this.NODE_WIDTH}px`;
+        html.style.height = `${this.NODE_HEIGHT}px`;
         html.style.border = `1px solid black`;
         html.style.borderCollapse = 'collapse';
         html.innerHTML = this.id.toString();
@@ -58,7 +60,12 @@ class GridNode extends GraphNode {
 
     visited(): void {
         const visitedClassname = 'visited';
-        this.html.classList.add(visitedClassname);
+        const newlyVisitedClassname = 'newlyvisited';
+        this.html.classList.add(visitedClassname, newlyVisitedClassname);
+
+        this.timerJobId = setTimeout(() => {
+            this.html.classList.remove(newlyVisitedClassname);
+        }, this.NEW_EXPIRE_DURATION);
     }
 
     clicked(): void {
@@ -66,11 +73,25 @@ class GridNode extends GraphNode {
         this.html.classList.toggle(clickedClassname);
     }
 
-    reset(): void {
-        const visitedClassname = 'visited';
-        const clickedClassname = 'clicked';
+    designateShortestPath(): void {
+        const shortestPathClassname = 'shortest-path';
+        this.html.classList.add(shortestPathClassname);
+    }
 
-        this.html.classList.remove(visitedClassname, clickedClassname);
+    reset(): void {
+        this.cleanup();
+        const classNamesToRemove = [
+            'visited',
+            'shortest-path',
+            'newlyvisited',
+            'clicked',
+        ];
+
+        this.html.classList.remove(...classNamesToRemove);
+    }
+    
+    cleanup(): void {
+        clearTimeout(this.timerJobId);
     }
 }
 
@@ -175,6 +196,7 @@ class GridGraph {
     reset(): void {
         this.nodesClicked = [];
         this.nodes.forEach(node => {
+            node.cleanup();
             node.reset();
         });
     }

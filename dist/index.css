@@ -1,6 +1,12 @@
 .visited {
     background-color: #7ea0c2;
 }
+.visited.newlyvisited {
+    background-color: #fff06c;
+}
 .clicked {
     background-color: #5e5e5e;
+}
+.shortest-path {
+    background-color: #a379f1 !important;
 }

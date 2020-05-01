@@ -88,4 +88,30 @@ describe('testing behavior of AlgoRunner', () => {
         expect( fistNodesToVisit[0].html.classList.contains('visited') ).toBe(false);
         expect( fistNodesToVisit[1].html.classList.contains('visited') ).toBe(false);
     });
+
+    test('stop() should immediately stop runner from stepping through algo', () => {
+        runner.run();
+        runner.stop();
+        jest.runAllTimers();
+
+        graph.nodes.forEach(node => {
+            expect( node.html.classList.contains('visited') ).toBe(false);
+            expect( node.html.classList.contains('newlyvisited') ).toBe(false);
+            expect( node.html.classList.contains('shortest-path') ).toBe(false);
+        });
+    });
+
+    test('run() should designate nodes in shortestpath stepping through algorithm', () => {
+        const expectedShortestPath = [0, 1, 2, 5, 8];
+
+        runner.run();
+        jest.runAllTimers();
+
+        graph.nodes.forEach(node => {
+            if (expectedShortestPath.indexOf(node.id) !== -1)
+                expect( node.html.classList.contains('shortest-path') ).toBe(true);
+            else
+                expect( node.html.classList.contains('shortest-path') ).toBe(false);
+        })
+    });
 });

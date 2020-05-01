@@ -37,6 +37,8 @@ function algoFactory(appState: AppState): () => Algorithm {
 }
 
 $buttonChangeDimension.addEventListener('click', () => {
+    appState.runner && appState.runner.stop();
+    appState.graph && appState.graph.reset();
     $boxes.innerHTML = '';
 
     const width = parseInt( $inputWeight.value );
@@ -49,5 +51,6 @@ $buttonChangeDimension.addEventListener('click', () => {
 });
 
 $buttonReset.addEventListener('click', () => {
+    appState.runner.stop();
     appState.graph.reset();
 });
