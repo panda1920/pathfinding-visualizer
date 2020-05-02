@@ -5,7 +5,7 @@ executors:
     docker:
       - image: circleci/node:12.2
 
-orb:
+orbs:
   aws-s3: circleci/aws-s3@1.0.15
 
 jobs:
@@ -51,6 +51,7 @@ jobs:
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-region: AWS_REGION
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          arguments: '--acl public-read'
           from: ./dist
           to: S3_URL
           overwrite: true
