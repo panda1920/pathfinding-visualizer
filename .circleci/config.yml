@@ -51,7 +51,8 @@ jobs:
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-region: AWS_REGION
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          arguments: '--acl public-read'
+          arguments: |
+            --acl public-read
           from: ./dist
           to: S3_URL
           overwrite: true
