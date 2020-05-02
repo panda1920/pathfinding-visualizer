@@ -63,6 +63,6 @@ workflows:
     jobs:
       # - test-code
       - deploy-code:
-          requires:
-            - test-code
+          # requires:
+          #   - test-code
           context: AWS
