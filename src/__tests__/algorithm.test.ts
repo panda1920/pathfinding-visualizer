@@ -8,12 +8,13 @@ describe('testing behavior of Dijkstra algorithm', () => {
         initNodeId: 1,
         targetNodeId: 10,
     }
-    let graph = null;
+    let graph: GridGraph = null;
     let algo: DijkstraAlgorithm = null;
 
     beforeEach(() => {
         graph = new GridGraph(TEST_DATA.gridWidth, TEST_DATA.gridHeight);
-        algo = new DijkstraAlgorithm(graph, TEST_DATA.initNodeId, TEST_DATA.targetNodeId);
+        graph.nodesClicked = [ TEST_DATA.initNodeId, TEST_DATA.targetNodeId ];
+        algo = new DijkstraAlgorithm(graph);
     });
 
     test('algorithm distance should be 0 for init and inifinity for others', () => {
@@ -64,5 +65,30 @@ describe('testing behavior of Dijkstra algorithm', () => {
         expect(algo.shortestDistances).toEqual(expectedDistances);
     });
 
-    // figure out how to traverse from init to at
+    test('shortest path after completion', () => {
+        const expectedPath = [ 10, 6, 2, 1 ];
+
+        while (!algo.isCompleted)
+            algo.step();
+
+        expect(algo.calculateShortestPath()).toEqual(expectedPath);
+    })
+
+    test('shortest path before completion should return empty array', () => {
+        const expectedPath: number[] = [];
+
+        algo.step();
+        algo.step();
+
+        expect(algo.calculateShortestPath()).toEqual(expectedPath);
+    })
+
+    test('should throw when graph not clicked twice', () => {
+        graph = new GridGraph(TEST_DATA.gridWidth, TEST_DATA.gridHeight);
+        // graph.nodesClicked is []
+
+        expect(() => {
+            new DijkstraAlgorithm(graph);
+        }).toThrow();
+    });
 });

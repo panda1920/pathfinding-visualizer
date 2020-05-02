@@ -27,8 +27,7 @@ function algoFactory(appState: AppState): () => Algorithm {
     return (): Algorithm => {
         switch(appState.algoChoice) {
             case AlgoChoice.Dijkstra: {
-                const [ firstNode, secondNode ] = appState.graph.nodesClicked;
-                return new DijkstraAlgorithm(appState.graph, firstNode, secondNode);
+                return new DijkstraAlgorithm(appState.graph);
             }
             default:
                 throw 'Undefined algorithm was chosen';

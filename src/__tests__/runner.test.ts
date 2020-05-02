@@ -12,7 +12,7 @@ describe('testing behavior of AlgoRunner', () => {
         targetNodeId: 8,
     };
     const algoFactory = (): Algorithm => {
-        return new DijkstraAlgorithm(graph, TEST_DATA.initialNodeId, TEST_DATA.targetNodeId);
+        return new DijkstraAlgorithm(graph);
     }
 
     beforeEach(() => {
@@ -74,7 +74,7 @@ describe('testing behavior of AlgoRunner', () => {
         const completedFactory = (): Algorithm => {
             const completedAlgo = algoFactory();
             while (!completedAlgo.isCompleted)
-            completedAlgo.step();
+                completedAlgo.step();
             return completedAlgo;
         }
         runner = new AlgoRunner(graph, completedFactory);
