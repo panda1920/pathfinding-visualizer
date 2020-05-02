@@ -1,6 +1,4 @@
-webpack.config.js
-
 # ignore compiled files
 dist/js/*
-
+# ignore configuration files
 *config.js
