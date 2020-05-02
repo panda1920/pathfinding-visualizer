@@ -54,7 +54,7 @@ jobs:
           arguments: |
             --acl public-read
           from: ./dist
-          to: S3_URL
+          to: $S3_URL
           overwrite: true
 
 workflows:
