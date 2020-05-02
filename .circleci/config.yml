@@ -61,7 +61,7 @@ workflows:
   version: 2
   test-and-deploy:
     jobs:
-      - test-code
+      # - test-code
       - deploy-code:
           requires:
             - test-code
