@@ -1,6 +1,9 @@
-import GridGraph from './graph';
+import GridGraph, { BlockedGraph } from './graph';
 import { Algorithm, DijkstraAlgorithm } from './algorithm';
+import { RandomBlocker } from './blocker';
 import AlgoRunner from './runner';
+
+import '../styles/index.scss';
 
 const $inputWeight = document.querySelector('#input-width') as HTMLInputElement;
 const $inputHeight = document.querySelector('#input-height') as HTMLInputElement;
@@ -12,7 +15,7 @@ enum AlgoChoice {
     Dijkstra,
 }
 interface AppState {
-    graph: GridGraph|null;
+    graph: GridGraph;
     algoChoice: AlgoChoice;
     runner: AlgoRunner;
 }
@@ -43,7 +46,8 @@ $buttonChangeDimension.addEventListener('click', () => {
     const width = parseInt( $inputWeight.value );
     const height = parseInt( $inputHeight.value );
 
-    appState.graph = new GridGraph(width, height);
+    const blocker = new RandomBlocker(20);
+    appState.graph = new BlockedGraph(width, height, blocker);
     appState.graph.drawGraphOnHtml($boxes);
     appState.runner = new AlgoRunner(appState.graph, algoFactory(appState));
     appState.graph.setRunCallback( () => appState.runner.run() );

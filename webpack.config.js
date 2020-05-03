@@ -18,7 +18,7 @@ module.exports = {
         rules: [
             {
                 // typescript files go through tsc compilation -> babel transpile
-                // exclude files in node_modules folder for such procedure
+                // exclude files in node_modules folder because they don't need to it
                 test: /\.ts$/, 
                 exclude: /node_modules/,
                 use: [
@@ -27,6 +27,24 @@ module.exports = {
                     },
                     {
                         loader: 'ts-loader'
+                    }
+                ]
+            },
+            {
+                // inject styles into DOM using javascript
+                test: /\.scss$/,
+                use: [
+                    {
+                        // inject css into DOM
+                        loader: 'style-loader'
+                    },
+                    {
+                        // convert css into javascript and embed into code
+                        loader: 'css-loader'
+                    },
+                    {
+                        // convert sass to css
+                        loader: 'sass-loader'
                     }
                 ]
             }

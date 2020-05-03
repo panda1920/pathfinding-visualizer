@@ -1,6 +1,12 @@
-import GridGraph from '../ts/graph';
+import { Blocker } from '../ts/blocker';
+import GridGraph, { BlockedGraph }  from '../ts/graph';
 
-describe('testing behavior of GridGraph', () => {
+const mockBlock = jest.fn().mockName('Mocked block() method of Blocker');
+const mockBlocker = jest.fn<Blocker, []>(() => {
+    return { block: mockBlock };
+});
+
+describe('testing behavior of GridGraph without blockers', () => {
     let graph: GridGraph|null = null;
     const TEST_DATA = {
         width: 4,
@@ -36,6 +42,7 @@ describe('testing behavior of GridGraph', () => {
             const node = graph.nodes[id];
             
             expect(node.edges).toHaveLength(2);
+            expect(node.getAttachedNodes()).toHaveLength(2);
         });
     });
 
@@ -45,6 +52,7 @@ describe('testing behavior of GridGraph', () => {
             const node = graph.nodes[id];
             
             expect(node.edges).toHaveLength(3);
+            expect(node.getAttachedNodes()).toHaveLength(3);
         });
     });
 
@@ -54,6 +62,7 @@ describe('testing behavior of GridGraph', () => {
             const node = graph.nodes[id];
 
             expect(node.edges).toHaveLength(4);
+            expect(node.getAttachedNodes()).toHaveLength(4);
         });
     });
 
@@ -124,4 +133,99 @@ describe('testing behavior of GridGraph', () => {
 
         expect(mockCallback).toHaveBeenCalledTimes(1);
     })
+});
+
+describe('testing behavior of GridGraph with blockers', () => {
+    let graph: GridGraph = null;
+    const TEST_DATA = {
+        width: 4,
+        height: 3,
+        blockedNodes: [4, 5, ],
+    };
+    const renderHTML = (): void => {
+        const html = document.createElement('div');
+        html.classList.add('graph');
+        graph.drawGraphOnHtml(html);
+        window.document.body.appendChild(html);
+    };
+    const clearHTML = (): void => {
+        window.document.body.innerHTML = '';
+    }
+
+    beforeEach(() => {
+        graph = new GridGraph(TEST_DATA.width, TEST_DATA.height);
+        TEST_DATA.blockedNodes.forEach(nodeId => {
+            graph.nodes[nodeId].block();
+        })
+        renderHTML();
+    });
+
+    afterEach(() => {
+        graph = null;
+        clearHTML();
+    });
+
+    test('blocked nodes should have no attached nodes', () => {
+        TEST_DATA.blockedNodes.forEach(nodeId => {
+            const node = graph.nodes[nodeId];
+
+            expect(node.getAttachedNodes()).toHaveLength(0);
+        });
+    });
+
+    test('blocked nodes should be appiled blocked class', () => {
+        TEST_DATA.blockedNodes.forEach(nodeId => {
+            const node = graph.nodes[nodeId];
+
+            expect( node.html.classList.contains('blocked') ).toBe(true);
+        });
+    });
+
+    test('corner nodes adjacent to blocked node should have -1 non-blocked edges', () => {
+        const nodeIds = [0, 8];
+        nodeIds.forEach(nodeId => {
+            const node = graph.nodes[nodeId];
+
+            expect(node.edges).toHaveLength(2);
+            expect(node.getAttachedNodes()).toHaveLength(1);
+        });
+    });
+
+    test('edge nodes adjacent to blocked node should have -1 non-blocked edges', () => {
+        const nodeIds = [1, 9];
+        nodeIds.forEach(nodeId => {
+            const node = graph.nodes[nodeId];
+
+            expect(node.edges).toHaveLength(3);
+            expect(node.getAttachedNodes()).toHaveLength(2);
+        });
+    });
+
+    test('middle nodes adjacent to blocked node should have -1 non-blocked edges', () => {
+        const nodeIds = [6];
+        nodeIds.forEach(nodeId => {
+            const node = graph.nodes[nodeId];
+
+            expect(node.edges).toHaveLength(4);
+            expect(node.getAttachedNodes()).toHaveLength(3);
+        });
+    });
+});
+
+describe('testing behavior of BlockedGraph', () => {
+    let graph: BlockedGraph = null;
+    let mockedBlocker: Blocker = null;
+    const TEST_DATA = {
+        width: 4,
+        height: 3,
+    };
+
+    beforeEach(() => {
+        mockedBlocker = new mockBlocker();
+        graph = new BlockedGraph(TEST_DATA.width, TEST_DATA.height, mockedBlocker);
+    });
+
+    test('constructor should call block on blocker', () => {
+        expect(mockBlock).toHaveBeenCalledTimes(1);
+    });
 });

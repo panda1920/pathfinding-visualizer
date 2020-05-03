@@ -1,5 +1,8 @@
+import { Blocker } from './blocker';
+
 export class GraphNode {
     readonly edges: GraphEdge[];
+    private _isBlocked = false;
     
     constructor(public readonly id: number) {
         this.edges = [];
@@ -17,9 +20,20 @@ export class GraphNode {
     }
 
     getAttachedNodes(): GraphNode[] {
-        return this.edges.map(edge => {
-            return edge.nodes.filter(node => node.id !== this.id)[0];
+        return this.edges
+            .filter(edge => !edge.isBlocked)
+            .map(edge => edge.nodes.find(node => node.id !== this.id) );
+    }
+
+    block(): void {
+        this.edges.forEach(edge => {
+            edge.isBlocked = true;
         });
+        this._isBlocked = true;
+    }
+
+    get isBlocked(): boolean {
+        return this._isBlocked;
     }
 }
 
@@ -76,6 +90,11 @@ class GridNode extends GraphNode {
     designateShortestPath(): void {
         const shortestPathClassname = 'shortest-path';
         this.html.classList.add(shortestPathClassname);
+    }
+
+    block(): void {
+        super.block();
+        this.html.classList.add('blocked');
     }
 
     reset(): void {
@@ -206,4 +225,13 @@ class GridGraph {
     }
 }
 
+class BlockedGraph extends GridGraph {
+    constructor(width: number, height: number, blocker: Blocker) {
+        super(width, height);
+
+        blocker.block(this);
+    }
+}
+
 export default GridGraph;
+export { BlockedGraph };
