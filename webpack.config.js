@@ -1,15 +1,8 @@
-const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    mode: 'development',
-    devtool: 'source-map',
     target: 'web',
     entry: './src/ts/index.ts',
-    output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'js/index.[contentHash].bundle.js'
-    },
     resolve: {
         // tell webpack where to look for modules imported in each file
         extensions: [ '.ts', '.mjs', '.js' ],
