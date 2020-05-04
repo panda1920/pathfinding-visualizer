@@ -1,5 +1,5 @@
 import { Blocker } from '../ts/blocker';
-import GridGraph, { BlockedGraph }  from '../ts/graph';
+import { GridGraph, BlockedGraph }  from '../ts/graph';
 
 const mockBlock = jest.fn().mockName('Mocked block() method of Blocker');
 const mockBlocker = jest.fn<Blocker, []>(() => {

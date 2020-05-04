@@ -1,4 +1,5 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     mode: 'development',
@@ -6,8 +7,8 @@ module.exports = {
     target: 'web',
     entry: './src/ts/index.ts',
     output: {
-        path: path.resolve(__dirname, 'dist/js'),
-        filename: 'index.bundle.js'
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'js/index.bundle.js'
     },
     resolve: {
         // tell webpack where to look for modules imported in each file
@@ -49,5 +50,12 @@ module.exports = {
                 ]
             }
         ]
-    }
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            title: 'Pathfinding-visualizer',
+            filename: 'index.html',
+            template: './src/template.html'
+        })
+    ]
 };

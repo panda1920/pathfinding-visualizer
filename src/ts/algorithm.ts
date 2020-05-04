@@ -1,4 +1,4 @@
-import GridGraph, { GraphNode } from './graph';
+import { GridGraph, GraphNode } from './graph';
 
 abstract class Algorithm {
     readonly shortestDistances: number[];

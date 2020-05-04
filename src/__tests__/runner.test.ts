@@ -1,4 +1,4 @@
-import GridGraph from '../ts/graph';
+import { GridGraph } from '../ts/graph';
 import { Algorithm, DijkstraAlgorithm } from '../ts/algorithm';
 import AlgoRunner from '../ts/runner';
 

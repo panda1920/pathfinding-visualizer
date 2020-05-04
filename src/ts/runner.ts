@@ -1,4 +1,4 @@
-import GridGraph from './graph';
+import { GridGraph } from './graph';
 import { Algorithm } from './algorithm';
 
 class AlgoRunner {

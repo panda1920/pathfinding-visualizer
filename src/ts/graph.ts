@@ -1,6 +1,6 @@
 import { Blocker } from './blocker';
 
-export class GraphNode {
+class GraphNode {
     readonly edges: GraphEdge[];
     private _isBlocked = false;
     
@@ -233,5 +233,4 @@ class BlockedGraph extends GridGraph {
     }
 }
 
-export default GridGraph;
-export { BlockedGraph };
+export { GraphNode, GridGraph, BlockedGraph };

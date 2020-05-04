@@ -1,4 +1,4 @@
-import GridGraph from '../ts/graph';
+import { GridGraph } from '../ts/graph';
 import { RandomBlocker } from '../ts/blocker';
 
 describe('testing behavior of random blocker', () => {

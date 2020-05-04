@@ -1,4 +1,4 @@
-import GridGraph, { GraphNode } from './graph';
+import { GridGraph, GraphNode } from './graph';
 
 // class to figure out how to place blockers on the grid
 abstract class Blocker {
@@ -6,7 +6,7 @@ abstract class Blocker {
 }
 
 // places blockers randomly on the grid
-// makes sure there won't be any unreachable node that is not blocked
+// makes sure there won't be any unreachable node
 class RandomBlocker extends Blocker {
     private currentGraph: GridGraph = null;
 
@@ -30,15 +30,16 @@ class RandomBlocker extends Blocker {
     }
 
     private blockNode(availableNodeIds: Set<number>): void {
-        const nodeIds = Array.from(availableNodeIds);
-        const nodeIdToBlock = this.selectNodeToBlock(nodeIds);
+        const nodeIdToBlock = this.selectNodeToBlock(availableNodeIds);
 
         this.currentGraph.nodes[nodeIdToBlock].block();
 
         availableNodeIds.delete(nodeIdToBlock);
     }
 
-    private selectNodeToBlock(nodeIds: number[]): number {
+    private selectNodeToBlock(availableNodeIds: Set<number>): number {
+        const nodeIds = Array.from(availableNodeIds);
+
         while (true) {
             const nodeIdToBlock = nodeIds[ Math.floor(Math.random() * nodeIds.length) ];
             if ( this.makesGraphUnreachable(nodeIdToBlock) )

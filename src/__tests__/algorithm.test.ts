@@ -1,5 +1,5 @@
 import { DijkstraAlgorithm } from '../ts/algorithm';
-import GridGraph from '../ts/graph';
+import { GridGraph } from '../ts/graph';
 
 describe('testing behavior of Dijkstra algorithm', () => {
     const TEST_DATA = {

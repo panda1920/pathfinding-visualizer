@@ -1,4 +1,4 @@
-import GridGraph, { BlockedGraph } from './graph';
+import { GridGraph, BlockedGraph } from './graph';
 import { Algorithm, DijkstraAlgorithm } from './algorithm';
 import { RandomBlocker } from './blocker';
 import AlgoRunner from './runner';
@@ -45,8 +45,8 @@ $buttonChangeDimension.addEventListener('click', () => {
 
     const width = parseInt( $inputWeight.value );
     const height = parseInt( $inputHeight.value );
-
     const blocker = new RandomBlocker(20);
+
     appState.graph = new BlockedGraph(width, height, blocker);
     appState.graph.drawGraphOnHtml($boxes);
     appState.runner = new AlgoRunner(appState.graph, algoFactory(appState));
