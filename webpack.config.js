@@ -8,7 +8,7 @@ module.exports = {
     entry: './src/ts/index.ts',
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'js/index.bundle.js'
+        filename: 'js/index.[contentHash].bundle.js'
     },
     resolve: {
         // tell webpack where to look for modules imported in each file
@@ -52,6 +52,7 @@ module.exports = {
         ]
     },
     plugins: [
+        // generates html from template
         new HtmlWebpackPlugin({
             title: 'Pathfinding-visualizer',
             filename: 'index.html',
