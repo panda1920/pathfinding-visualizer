@@ -1,16 +1,20 @@
 $primary-color: #3d3d3d;
+$visited-color: #204dad;
 
 .visited {
-    background-color: #7ea0c2;
-}
-.visited.newlyvisited {
-    background-color: #fff06c;
-}
-.clicked {
-    background-color: #5e5e5e;
+    background-color: $visited-color;
+    transition: background-color 0.2s ease-out;
+
+    &.newlyvisited {
+        background-color: lighten($visited-color, 40);
+    }
 }
 .shortest-path {
     background-color: #a379f1 !important;
+    transition: none;
+}
+.clicked {
+    background-color: #68eb56;
 }
 .blocked {
     background-color: $primary-color;

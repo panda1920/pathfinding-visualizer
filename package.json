@@ -6,8 +6,7 @@
   "scripts": {
     "build": "webpack --config webpack.prod.config.js",
     "start": "webpack-dev-server --config webpack.dev.config.js --open",
-    "buildw": "webpack --watch",
-    "test": "jest"
+    "test": "jest --watch"
   },
   "keywords": [],
   "author": "",
@@ -22,11 +21,13 @@
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
     "babel-loader": "^8.1.0",
+    "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^3.5.3",
     "eslint": "^6.8.0",
     "eslint-plugin-jest": "^23.8.2",
     "html-webpack-plugin": "^4.3.0",
     "jest": "^25.4.0",
+    "mini-css-extract-plugin": "^0.9.0",
     "node-sass": "^4.14.0",
     "sass-loader": "^8.0.2",
     "style-loader": "^1.2.1",

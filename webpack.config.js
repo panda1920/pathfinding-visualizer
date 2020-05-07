@@ -24,24 +24,6 @@ module.exports = {
                     }
                 ]
             },
-            {
-                // inject styles into DOM using javascript
-                test: /\.scss$/,
-                use: [
-                    {
-                        // inject css into DOM
-                        loader: 'style-loader'
-                    },
-                    {
-                        // convert css into javascript and embed into code
-                        loader: 'css-loader'
-                    },
-                    {
-                        // convert sass to css
-                        loader: 'sass-loader'
-                    }
-                ]
-            }
         ]
     },
     plugins: [
