@@ -7,14 +7,14 @@
     <title>Document</title>
 </head>
 <body>
-    <div>
-        <label for='input-width'>Width</label>
-        <input type="number" id='input-width'>
-        <label for='input-width'>Height</label>
-        <input type="number" id='input-height'>
-        <button id='change-dimension'>Change dimension</button>
-        <button id='reset'>Reset</button>
+    <header>
+        <div>PATHFINDING VISUALIZER</div>
+        <button class='uk-button' id='change-size'>Change Size</button>
+        <button class='uk-button' type='button' id='algorithm'>Select Algorithm</button>
+        <button class='uk-button' id='reset'>Reset</button>
+    </header>
+    <div id='boxes'>
+        <!-- boxex gets injected here -->
     </div>
-    <div id='boxes'></div>
 </body>
 </html>

@@ -1,21 +1,74 @@
+@import '~uikit/dist/css/uikit.min.css';
+
 $primary-color: #3d3d3d;
+$text-color: white;
 $visited-color: #204dad;
+$h-padding: 100px;
 
-.visited {
-    background-color: $visited-color;
-    transition: background-color 0.2s ease-out;
+header {
+    background-color: $primary-color;
+    color: white;
+    height: 60px;
+    padding: 0 $h-padding;
 
-    &.newlyvisited {
-        background-color: lighten($visited-color, 40);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    
+    .uk-button {
+        flex: 0 0 auto;
+        color: $text-color;
+        background-color: transparent;
+        border-color: white;
+        border-style: solid;
+        border: 1px solid white;
+
+        &:hover {
+            color: darken($text-color, 20);
+        }
+    }
+    div {
+        flex: 0 0 auto;
+        margin-right: $h-padding;
     }
 }
-.shortest-path {
-    background-color: #a379f1 !important;
-    transition: none;
+
+.node {
+    &.visited {
+        background-color: $visited-color;
+        transition: background-color 0.2s ease-out;
+    
+        &.newlyvisited {
+            background-color: lighten($visited-color, 40);
+        }
+    }
+    &.shortest-path {
+        background-color: #a379f1 !important;
+        transition: none;
+    }
+    &.clicked {
+        background-color: #68eb56;
+    }
+    &.blocked {
+        background-color: $primary-color;
+    }
 }
-.clicked {
-    background-color: #68eb56;
-}
-.blocked {
-    background-color: $primary-color;
+
+.dropdown-container {
+    padding: 15px 25px;
+
+    .dropdown-option {
+        padding: 5px 0;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+    .dropdown-option.selected {
+        font-weight: bold;
+
+        &:hover {
+            cursor: default;
+        }
+    }
 }

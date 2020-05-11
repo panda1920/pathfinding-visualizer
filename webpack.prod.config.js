@@ -8,12 +8,11 @@ const common = require('./webpack.config.js');
 module.exports = merge(common, {
     mode: 'production',
     output: {
-        path: path.resolve(__dirname, 'dist'),
         filename: 'js/index.[contentHash].bundle.js'
     },
     plugins: [
         new MiniCssExtractPlugin({
-            filename: 'main.[contentHash].bundle.css'
+            filename: 'assets/css/main.[contentHash].bundle.css'
         }),
         new CleanWebpackPlugin()
     ],
@@ -37,8 +36,21 @@ module.exports = merge(common, {
                     {
                         // convert sass to css
                         loader: 'sass-loader'
+                    },
+                    
+                ],
+                
+            },
+            {
+                // deal with font references
+                test: /\.(woff|ttf|svg)$/,
+                use: {
+                    loader: 'file-loader',
+                    options: {
+                        outputPath: '/assets/fonts',
+                        name: '[name].[ext]'
                     }
-                ]
+                },
             }
         ]
     }
