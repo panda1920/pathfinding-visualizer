@@ -108,27 +108,13 @@ function initializeDropdowns(): void {
     $algoDropdown.attachDropdown($buttonAlgo);
 }
 
-// $buttonChangeSize.addEventListener('click', () => {
-//     appState.runner && appState.runner.stop();
-//     appState.graph && appState.graph.reset();
-//     $boxes.innerHTML = '';
-
-//     const { width, height } = convertGridSizeChoiceToDimension(appState.gridSize);
-//     const blocker = new RandomBlocker(20);
-
-//     appState.graph = new BlockedGraph(width, height, blocker);
-//     appState.graph.drawGraphOnHtml($boxes);
-//     appState.runner = new AlgoRunner(appState.graph, algoFactory(appState));
-//     appState.graph.setRunCallback( () => appState.runner.run() );
-// });
-
 function initializeApp(): void {
     createNewGraph();
+    $buttonReset.addEventListener('click', () => {
+        appState.runner.stop();
+        appState.graph.reset();
+    });
 }
 
-$buttonReset.addEventListener('click', () => {
-    appState.runner.stop();
-    appState.graph.reset();
-});
 initializeDropdowns();
 initializeApp();
