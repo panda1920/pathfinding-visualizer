@@ -9,12 +9,19 @@
 <body>
     <header>
         <div>PATHFINDING VISUALIZER</div>
-        <button class='uk-button' id='change-size'>Change Size</button>
-        <button class='uk-button' type='button' id='algorithm'>Select Algorithm</button>
-        <button class='uk-button' id='reset'>Reset</button>
+        <div>
+            <button class='uk-button' id='change-size'>Change Size</button>
+            <button class='uk-button' type='button' id='algorithm'>Select Algorithm</button>
+            <button class='uk-button' id='reset'>Reset</button>
+        </div>
     </header>
-    <div id='boxes'>
-        <!-- boxex gets injected here -->
+    <div id='boxes-container'>
+        <div id='boxes'>
+            <!-- boxex gets injected here -->
+        </div>
+    </div>
+    <div id='info'>
+        <p>Click 2 empty boxes and see how shortest path between them are calculated!</p>
     </div>
 </body>
 </html>

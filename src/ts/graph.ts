@@ -32,6 +32,13 @@ class GraphNode {
         this._isBlocked = true;
     }
 
+    unblock(): void {
+        this.edges.forEach(edge => {
+            edge.isBlocked = false;
+        });
+        this._isBlocked = false;
+    }
+
     get isBlocked(): boolean {
         return this._isBlocked;
     }
@@ -46,7 +53,7 @@ class GridNode extends GraphNode {
     private readonly NODE_WIDTH = 32;
     private readonly NODE_HEIGHT = 32;
     private readonly NEW_EXPIRE_DURATION = 200;
-    private timerJobId: any = null;
+    private timerJobId: any;
 
     constructor(
         id: number,
@@ -62,12 +69,10 @@ class GridNode extends GraphNode {
         const html = document.createElement('div');
         html.id = `${this.id}`;
         html.className = 'node';
-        html.style.display = 'inline-block';
         html.style.width = `${this.NODE_WIDTH}px`;
         html.style.height = `${this.NODE_HEIGHT}px`;
-        html.style.border = `1px solid black`;
         html.style.borderCollapse = 'collapse';
-        html.innerHTML = this.id.toString();
+        html.innerHTML = '';
 
         return html;
     }
@@ -95,6 +100,11 @@ class GridNode extends GraphNode {
     block(): void {
         super.block();
         this.html.classList.add('blocked');
+    }
+
+    unblock(): void {
+        super.unblock();
+        this.html.classList.remove('blocked');
     }
 
     reset(): void {
@@ -181,12 +191,17 @@ class GridGraph {
     }
 
     drawGraphOnHtml(html: HTMLElement): void {
+        let currentRow: HTMLElement;
+        
         this.nodes.forEach((node, idx) => {
-            if (idx % this.width === 0 && idx !== 0) {
-                html.appendChild( document.createElement('br') );
+            if (idx % this.width === 0) {
+                currentRow && html.appendChild(currentRow);
+                currentRow = document.createElement('div');
+                currentRow.classList.add('nodes-row');
             }
-            html.appendChild( this.addClickHandler( node.html ) );
+            currentRow.appendChild( this.addClickHandler( node.html ) );
         });
+        html.appendChild(currentRow);
     }
 
     private addClickHandler(html: HTMLElement): HTMLElement {
@@ -217,6 +232,7 @@ class GridGraph {
         this.nodes.forEach(node => {
             node.cleanup();
             node.reset();
+            node.unblock();
         });
     }
 
@@ -226,10 +242,15 @@ class GridGraph {
 }
 
 class BlockedGraph extends GridGraph {
-    constructor(width: number, height: number, blocker: Blocker) {
+    constructor(width: number, height: number, private blocker: Blocker) {
         super(width, height);
 
         blocker.block(this);
+    }
+
+    reset(): void {
+        super.reset();
+        this.blocker.block(this);
     }
 }
 

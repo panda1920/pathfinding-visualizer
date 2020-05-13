@@ -213,8 +213,8 @@ describe('testing behavior of GridGraph with blockers', () => {
 });
 
 describe('testing behavior of BlockedGraph', () => {
-    let graph: BlockedGraph = null;
-    let mockedBlocker: Blocker = null;
+    let graph: BlockedGraph;
+    let mockedBlocker: Blocker;
     const TEST_DATA = {
         width: 4,
         height: 3,

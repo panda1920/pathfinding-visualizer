@@ -41,13 +41,13 @@ interface Dimension {
 function convertGridSizeChoiceToDimension(gridSize: GridSizeChoice): Dimension {
     switch (gridSize) {
         case GridSizeChoice.Small: {
-            return { width: 10, height: 6 };
+            return { width: 10, height: 8 };
         }
         case GridSizeChoice.Medium: {
             return { width: 20, height: 12 };
         }
         case GridSizeChoice.Large: {
-            return { width: 30, height: 18 };
+            return { width: 30, height: 16 };
         }
     }
 }
