@@ -6,3 +6,6 @@
 
 # files built
 dist/*
+
+# some error logs
+/report*.json

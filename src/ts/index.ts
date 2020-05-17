@@ -2,6 +2,7 @@ import { Dropdown } from './dropdown';
 import { GridGraph, BlockedGraph } from './graph';
 import { Algorithm, DijkstraAlgorithm } from './algorithm';
 import { RandomBlocker } from './blocker';
+import { GridSizeChoice, AlgoChoice, createStringArrayFromEnum } from './enums';
 import AlgoRunner from './runner';
 
 import '../styles/index.scss';
@@ -13,14 +14,6 @@ const $boxes = document.querySelector('#boxes') as HTMLElement;
 let $sizeDropdown: Dropdown;
 let $algoDropdown: Dropdown;
 
-enum GridSizeChoice {
-    Small,
-    Medium,
-    Large,
-}
-enum AlgoChoice {
-    Dijkstra,
-}
 interface AppState {
     graph: GridGraph;
     gridSize: GridSizeChoice;
@@ -63,10 +56,6 @@ function algoFactory(appState: AppState): () => Algorithm {
                 throw 'Undefined algorithm was chosen';
         }
     };
-}
-
-function createStringArrayFromEnum(e: typeof GridSizeChoice|typeof AlgoChoice): string[] {
-    return Object.values(e).filter(val => typeof val === 'string');
 }
 
 function createNewGraph(): void {

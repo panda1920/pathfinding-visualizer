@@ -20,22 +20,19 @@ class GraphNode {
     }
 
     getAttachedNodes(): GraphNode[] {
+        if (this.isBlocked)
+            return [];
+            
         return this.edges
-            .filter(edge => !edge.isBlocked)
-            .map(edge => edge.nodes.find(node => node.id !== this.id) );
+            .map(edge => edge.nodes.find(node => node.id !== this.id) )
+            .filter(node => !node.isBlocked);
     }
 
     block(): void {
-        this.edges.forEach(edge => {
-            edge.isBlocked = true;
-        });
         this._isBlocked = true;
     }
 
     unblock(): void {
-        this.edges.forEach(edge => {
-            edge.isBlocked = false;
-        });
         this._isBlocked = false;
     }
 
@@ -53,7 +50,7 @@ class GridNode extends GraphNode {
     private readonly NODE_WIDTH = 32;
     private readonly NODE_HEIGHT = 32;
     private readonly NEW_EXPIRE_DURATION = 200;
-    private timerJobId: any;
+    private timerJobId: ReturnType<typeof setTimeout>;
 
     constructor(
         id: number,

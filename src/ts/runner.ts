@@ -3,7 +3,7 @@ import { Algorithm } from './algorithm';
 
 class AlgoRunner {
     private readonly STEP_INTERVAL = 200;
-    private currentJobId: any = null;
+    private currentJobId: ReturnType<typeof setTimeout>;
 
     constructor(
         private graph: GridGraph,

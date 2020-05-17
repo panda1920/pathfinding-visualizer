@@ -20,13 +20,15 @@ class RandomBlocker extends Blocker {
     block(graph: GridGraph): void {
         this.currentGraph = graph;
         const nonBlockedNodeIds = new Set<number>( graph.nodes.map(node => node.id) );
-        const targetRemainingNodeCount = 
-            nonBlockedNodeIds.size - 
-            Math.floor(graph.width * graph.height * this.percentageToBlock / 100);
+        const targetRemainingNodeCount = nonBlockedNodeIds.size - this.calculateNodeCountToBlock();
 
         while (nonBlockedNodeIds.size > targetRemainingNodeCount) {
             this.blockNode(nonBlockedNodeIds);
         }
+    }
+
+    private calculateNodeCountToBlock(): number {
+        return Math.floor(this.currentGraph.nodes.length * this.percentageToBlock / 100);
     }
 
     private blockNode(availableNodeIds: Set<number>): void {
@@ -42,44 +44,40 @@ class RandomBlocker extends Blocker {
 
         while (true) {
             const nodeIdToBlock = nodeIds[ Math.floor(Math.random() * nodeIds.length) ];
-            if ( this.makesGraphUnreachable(nodeIdToBlock) )
+            if ( this.makesGraphUnreachable(nodeIdToBlock, availableNodeIds) )
                 continue;
             return nodeIdToBlock;
         }
     }
 
-    private makesGraphUnreachable(nodeId: number): boolean {
-        const isNodeBlocked = (node: GraphNode): boolean =>
-            (node.id === nodeId) ? true : node.isBlocked;
-        
-        const nodesOnSameRow = this.listNodesOnSameRow(nodeId);
-        if ( nodesOnSameRow.every(isNodeBlocked) ) {
-            return true;
-        }
+    private makesGraphUnreachable(nodeId: number, availableNodeIds: Set<number>): boolean {
+        this.currentGraph.nodes[nodeId].block();
 
-        const nodesOnSameCol = this.listNodesOnSameCol(nodeId);
-        if ( nodesOnSameCol.every(isNodeBlocked) ) {
-            return true;
-        }
+        const visited = new Set<number>();
+        const toVisit = [ availableNodeIds.values().next().value ];
+        this.traverseGraphBreadthFirst(visited, toVisit);
 
-        return false;
+        this.currentGraph.nodes[nodeId].unblock();
+
+        return visited.size !== availableNodeIds.size - 1;
     }
 
-    private listNodesOnSameRow(nodeId: number): GraphNode[] {
-        const nodeRow = Math.floor(nodeId / this.currentGraph.width);
-        const nodes =
-            [...Array(this.currentGraph.width).keys()]
-            .map(i => this.currentGraph.nodes[ i + nodeRow * this.currentGraph.width ]);
+    private traverseGraphBreadthFirst(visited: Set<number>, toVisit: Array<number>): void {
+        if (toVisit.length === 0)
+            return;
 
-        return nodes;
-    }
+        const currentNode = this.currentGraph.nodes[toVisit[0]];
+        toVisit.splice(0, 1);
 
-    private listNodesOnSameCol(nodeId: number): GraphNode[] {
-        const nodeCol = nodeId % this.currentGraph.width;
-        const nodes = [...Array(this.currentGraph.height).keys()]
-            .map(i => this.currentGraph.nodes[ nodeCol + i * this.currentGraph.width ]);
+        if (!visited.has(currentNode.id)) {
+            currentNode.getAttachedNodes().forEach(node => {
+                if (!visited.has(node.id))
+                    toVisit.push(node.id);
+            });
+        }
 
-        return nodes;
+        visited.add(currentNode.id);
+        this.traverseGraphBreadthFirst(visited, toVisit);
     }
 }
 
