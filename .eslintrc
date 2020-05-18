@@ -21,7 +21,9 @@
     "rules": {
         "no-constant-condition": 1,
         "no-unused-vars": [1, { "varsIgnorePattern": "^_$"}],
-        "@typescript-eslint/no-unused-vars": [1, { "varsIgnorePattern": "^_$"}]
+        "@typescript-eslint/no-unused-vars": [1, { "varsIgnorePattern": "^_$"}],
+        "@typescript-eslint/camelcase": 1,
+        "@typescript-eslint/semi": 1
     },
     "overrides": [
         {

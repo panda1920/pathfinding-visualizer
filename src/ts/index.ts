@@ -2,7 +2,7 @@ import { Dropdown } from './dropdown';
 import { GridGraph, BlockedGraph } from './graph';
 import { Algorithm, DijkstraAlgorithm } from './algorithm';
 import { RandomBlocker } from './blocker';
-import { GridSizeChoice, AlgoChoice, createStringArrayFromEnum } from './enums';
+import { GridSizeChoice, AlgoChoice, createKeysFromEnum } from './enums';
 import AlgoRunner from './runner';
 
 import '../styles/index.scss';
@@ -11,8 +11,8 @@ const $buttonChangeSize = document.querySelector('#change-size') as HTMLElement;
 const $buttonReset = document.querySelector('#reset') as HTMLElement;
 const $buttonAlgo = document.querySelector('#algorithm') as HTMLElement;
 const $boxes = document.querySelector('#boxes') as HTMLElement;
-let $sizeDropdown: Dropdown;
-let $algoDropdown: Dropdown;
+let $sizeDropdown: Dropdown<typeof GridSizeChoice>;
+let $algoDropdown: Dropdown<typeof AlgoChoice>;
 
 interface AppState {
     graph: GridGraph;
@@ -88,11 +88,11 @@ function changeAlgo(algoOption: string): void {
 }
 
 function initializeDropdowns(): void {
-    const sizeChoices = createStringArrayFromEnum(GridSizeChoice)
+    const sizeChoices = createKeysFromEnum(GridSizeChoice) as (keyof typeof GridSizeChoice)[];
     $sizeDropdown = new Dropdown('sizes', sizeChoices, (size) => changeSize(size));
     $sizeDropdown.attachDropdown($buttonChangeSize);
 
-    const algoChoices = createStringArrayFromEnum(AlgoChoice)
+    const algoChoices = createKeysFromEnum(AlgoChoice) as (keyof typeof AlgoChoice)[];
     $algoDropdown = new Dropdown('algos', algoChoices, (algo) => changeAlgo(algo));
     $algoDropdown.attachDropdown($buttonAlgo);
 }

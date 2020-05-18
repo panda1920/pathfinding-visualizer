@@ -2,9 +2,13 @@ import { Dropdown } from '../ts/dropdown';
 
 describe('testing bahavior of Dropdown', () => {
     const uniqueName = 'dropdown';
-    const options = ['option1', 'option2', 'option3'];
+    enum options {
+        option1,
+        option2,
+        option3
+    }
     const mockCallback = jest.fn().mockName('mocked callback');
-    let dropdown: Dropdown;
+    let dropdown: Dropdown<typeof options>;
     let toggle: HTMLElement;
 
     beforeEach(() => {
@@ -14,12 +18,16 @@ describe('testing bahavior of Dropdown', () => {
 
         mockCallback.mockClear();
         
-        dropdown = new Dropdown(uniqueName, options, mockCallback);
+        dropdown = new Dropdown(
+            uniqueName,
+            ["option1", "option2", "option3"],
+            mockCallback
+        );
         dropdown.attachDropdown(toggle);
     });
     afterEach(() => {
         window.document.body.innerHTML = '';
-    })
+    });
 
     test('should create element with id as uniquename', () => {
         const elements = Array.from(window.document.body.children);
@@ -37,7 +45,7 @@ describe('testing bahavior of Dropdown', () => {
 
         const optionsDOM = Array.from(child[0].children);
 
-        expect(optionsDOM).toHaveLength(options.length);
+        expect(optionsDOM).toHaveLength(3);
         expect(optionsDOM[0].textContent).toBe(options[0]);
         expect(optionsDOM[1].textContent).toBe(options[1]);
         expect(optionsDOM[2].textContent).toBe(options[2]);

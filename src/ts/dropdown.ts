@@ -1,10 +1,10 @@
 import UIkit from 'uikit';
 
-class Option {
+class Option<Tenum> {
     public dom: HTMLElement;
 
     constructor(
-        public optionString: string,
+        public optionString: keyof Tenum,
         clickHandler: (event: Event) => void
     ) {
         this.createHTML(optionString, clickHandler);
@@ -23,28 +23,28 @@ class Option {
     }
 
     private createHTML(
-        optionString: string,
+        optionString: keyof Tenum,
         clickHandler: (event: Event) => void
     ): void {
         this.dom = document.createElement('li');
-        this.dom.textContent = optionString;
+        this.dom.textContent = optionString as string;
         this.dom.classList.add('dropdown-option');
         this.dom.addEventListener('click', clickHandler);
     }
 }
 
-class Dropdown {
+class Dropdown<Tenum> {
     // private readonly component: 
     private dropdown: HTMLElement;
     private _component: UIkit.UIkitDropdownElement;
-    private options: Option[];
+    private options: Option<Tenum>[];
 
     constructor(
         uniqueName: string,
-        optionStrings: string[],
+        optionStrings: (keyof Tenum)[],
         private callback: (choice: string) => void,
     ) {
-        this.dropdown = this.createHTML(uniqueName, optionStrings, callback);
+        this.dropdown = this.createHTML(uniqueName, optionStrings);
         document.body.appendChild(this.dropdown);
     }
 
@@ -61,8 +61,7 @@ class Dropdown {
 
     private createHTML(
         uniqueName: string,
-        optionStrings: string[],
-        callback: (choice: string) => void
+        optionStrings: (keyof Tenum)[],
     ): HTMLElement {
         const dropdown = document.createElement('div');
         dropdown.classList.add('dropdown-container');
@@ -75,7 +74,7 @@ class Dropdown {
 
         this.options = [];
         optionStrings.forEach((str, idx) => {
-            const option = new Option(str, this.createClickHandler())
+            const option = new Option(str, this.createClickHandler());
             if (idx === 0)
                 option.select();
             listContainer.appendChild(option.dom);
