@@ -214,7 +214,7 @@ class GridGraph {
         const id = parseInt( target.id );
         const node = this.nodes[id];
         
-        if (this.nodesClicked.indexOf(id) === -1)
+        if (this.nodesClicked.indexOf(id) === -1 && !node.isBlocked)
             this.nodesClicked.push(id);
         else
             this.nodesClicked = this.nodesClicked.filter(nodeId => nodeId !== id);
@@ -222,7 +222,7 @@ class GridGraph {
 
         if (this.nodesClicked.length == 2)
             this.runCallback && this.runCallback();
-    }
+    };
 
     reset(): void {
         this.nodesClicked = [];

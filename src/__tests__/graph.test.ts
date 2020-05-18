@@ -150,13 +150,13 @@ describe('testing behavior of GridGraph with blockers', () => {
     };
     const clearHTML = (): void => {
         window.document.body.innerHTML = '';
-    }
+    };
 
     beforeEach(() => {
         graph = new GridGraph(TEST_DATA.width, TEST_DATA.height);
         TEST_DATA.blockedNodes.forEach(nodeId => {
             graph.nodes[nodeId].block();
-        })
+        });
         renderHTML();
     });
 
@@ -209,6 +209,13 @@ describe('testing behavior of GridGraph with blockers', () => {
             expect(node.edges).toHaveLength(4);
             expect(node.getAttachedNodes()).toHaveLength(3);
         });
+    });
+
+    test('clicking on blocked node should not be included in nodesClicked', () => {
+        const blockedNodeId = TEST_DATA.blockedNodes[0];
+        graph.nodes[blockedNodeId].html.click();
+
+        expect(graph.nodesClicked).toHaveLength(0);
     });
 });
 
