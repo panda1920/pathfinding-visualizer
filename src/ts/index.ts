@@ -14,23 +14,10 @@ const $boxes = document.querySelector('#boxes') as HTMLElement;
 let $sizeDropdown: Dropdown<typeof GridSizeChoice>;
 let $algoDropdown: Dropdown<typeof AlgoChoice>;
 
-interface AppState {
-    graph: GridGraph;
-    gridSize: GridSizeChoice;
-    algoChoice: AlgoChoice;
-    runner: AlgoRunner;
-}
-const appState: AppState = {
-    graph: null,
-    gridSize: GridSizeChoice.Small,
-    algoChoice: AlgoChoice.Dijkstra,
-    runner: null,
-};
 interface Dimension {
     width: number;
     height: number;
 }
-
 function convertGridSizeChoiceToDimension(gridSize: GridSizeChoice): Dimension {
     switch (gridSize) {
         case GridSizeChoice.Small: {
@@ -45,63 +32,85 @@ function convertGridSizeChoiceToDimension(gridSize: GridSizeChoice): Dimension {
     }
 }
 
-// returns a factory function that produces concrete algorithm object
-function algoFactory(appState: AppState): () => Algorithm {
-    return (): Algorithm => {
-        switch(appState.algoChoice) {
-            case AlgoChoice.Dijkstra: {
-                return new DijkstraAlgorithm(appState.graph);
-            }
-            default:
-                throw 'Undefined algorithm was chosen';
-        }
-    };
+interface AppState {
+    graph: GridGraph;
+    gridSize: GridSizeChoice;
+    algoChoice: AlgoChoice;
+    runner: AlgoRunner;
+
+    resetApp: () => void;
+    algoFactory: () => () => Algorithm;
+    createNewGraph: () => void;
+    changeSize: (size: string) => void;
+    changeAlgo: (algo: string) => void;
 }
 
-function createNewGraph(): void {
-    const { width, height } = convertGridSizeChoiceToDimension(appState.gridSize);
-    const blocker = new RandomBlocker(20);
-
-    appState.graph = new BlockedGraph(width, height, blocker);
-    appState.graph.drawGraphOnHtml($boxes);
-    appState.runner = new AlgoRunner(appState.graph, algoFactory(appState));
-    appState.graph.setRunCallback( () => appState.runner.run() );
-}
-
-function changeSize(sizeOption: string): void {
-    appState.runner && appState.runner.stop();
-    appState.graph && appState.graph.reset();
-    $boxes.innerHTML = '';
-
-    const gridSize = sizeOption as keyof typeof GridSizeChoice;
-    appState.gridSize = GridSizeChoice[gridSize];
-
-    createNewGraph();
-}
-
-function changeAlgo(algoOption: string): void {
-    appState.runner && appState.runner.stop();
-    appState.graph && appState.graph.reset();
+const appState: AppState = {
+    graph: null,
+    gridSize: GridSizeChoice.Small,
+    algoChoice: AlgoChoice.Dijkstra,
+    runner: null,
     
-    const algo = algoOption as keyof typeof AlgoChoice;
-    appState.algoChoice = AlgoChoice[algo];
-}
+    resetApp(): void {
+        this.runner && this.runner.stop();
+        this.graph && this.graph.reset();
+    },
+
+    // returns a factory function that produces concrete algorithm object
+    algoFactory(): () => Algorithm {
+        return (): Algorithm => {
+            switch(appState.algoChoice) {
+                case AlgoChoice.Dijkstra: {
+                    return new DijkstraAlgorithm(appState.graph);
+                }
+                default:
+                    throw 'Undefined algorithm was chosen';
+            }
+        };
+    },
+
+    createNewGraph(): void {
+        const { width, height } = convertGridSizeChoiceToDimension(this.gridSize);
+        const blocker = new RandomBlocker(20);
+    
+        this.graph = new BlockedGraph(width, height, blocker);
+        this.graph.drawGraphOnHtml($boxes);
+        this.runner = new AlgoRunner(this.graph, this.algoFactory(this));
+        this.graph.setRunCallback( () => this.runner.run() );
+    },
+
+    changeSize(sizeOption: string): void {
+        this.resetApp();
+        $boxes.innerHTML = '';
+    
+        const gridSize = sizeOption as keyof typeof GridSizeChoice;
+        this.gridSize = GridSizeChoice[gridSize];
+    
+        this.createNewGraph();
+    },
+    
+    changeAlgo(algoOption: string): void {
+        this.resetApp();
+        
+        const algo = algoOption as keyof typeof AlgoChoice;
+        this.algoChoice = AlgoChoice[algo];
+    },
+};
 
 function initializeDropdowns(): void {
     const sizeChoices = createKeysFromEnum(GridSizeChoice) as (keyof typeof GridSizeChoice)[];
-    $sizeDropdown = new Dropdown('sizes', sizeChoices, (size) => changeSize(size));
+    $sizeDropdown = new Dropdown('sizes', sizeChoices, (size) => appState.changeSize(size));
     $sizeDropdown.attachDropdown($buttonChangeSize);
 
     const algoChoices = createKeysFromEnum(AlgoChoice) as (keyof typeof AlgoChoice)[];
-    $algoDropdown = new Dropdown('algos', algoChoices, (algo) => changeAlgo(algo));
+    $algoDropdown = new Dropdown('algos', algoChoices, (algo) => appState.changeAlgo(algo));
     $algoDropdown.attachDropdown($buttonAlgo);
 }
 
 function initializeApp(): void {
-    createNewGraph();
+    appState.createNewGraph();
     $buttonReset.addEventListener('click', () => {
-        appState.runner.stop();
-        appState.graph.reset();
+        appState.resetApp();
     });
 }
 

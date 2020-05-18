@@ -20,7 +20,7 @@ describe('testing behavior of GridGraph without blockers', () => {
     };
     const clearHTML = (): void => {
         window.document.body.innerHTML = '';
-    }
+    };
 
     beforeEach(() => {
         graph = new GridGraph(TEST_DATA.width, TEST_DATA.height);
@@ -132,7 +132,7 @@ describe('testing behavior of GridGraph without blockers', () => {
         node2.html.click();
 
         expect(mockCallback).toHaveBeenCalledTimes(1);
-    })
+    });
 });
 
 describe('testing behavior of GridGraph with blockers', () => {
