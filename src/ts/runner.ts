@@ -2,7 +2,7 @@ import { GridGraph } from './graph';
 import { Algorithm } from './algorithm';
 
 class AlgoRunner {
-    private readonly STEP_INTERVAL = 200;
+    private readonly STEP_INTERVAL = 100;
     private currentJobId: ReturnType<typeof setTimeout>;
 
     constructor(

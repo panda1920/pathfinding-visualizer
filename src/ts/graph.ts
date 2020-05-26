@@ -47,9 +47,17 @@ class GraphNode {
 // and that it is going to be represented visually
 class GridNode extends GraphNode {
     readonly html: HTMLElement;
-    private readonly NODE_WIDTH = 32;
-    private readonly NODE_HEIGHT = 32;
-    private readonly NEW_EXPIRE_DURATION = 200;
+
+    private static readonly NODE_WIDTH = 32;
+    private static readonly NODE_HEIGHT = 32;
+    private static readonly NEW_EXPIRE_DURATION = 200;
+    private static readonly HTML_CLASSES = {
+        visited: 'visited',
+        newlyVisited: 'newlyvisited',
+        clicked: 'clicked',
+        shortestPath: 'shortest-path',
+        blocked: 'blocked',
+    }
     private timerJobId: ReturnType<typeof setTimeout>;
 
     constructor(
@@ -66,8 +74,8 @@ class GridNode extends GraphNode {
         const html = document.createElement('div');
         html.id = `${this.id}`;
         html.className = 'node';
-        html.style.width = `${this.NODE_WIDTH}px`;
-        html.style.height = `${this.NODE_HEIGHT}px`;
+        html.style.width = `${GridNode.NODE_WIDTH}px`;
+        html.style.height = `${GridNode.NODE_HEIGHT}px`;
         html.style.borderCollapse = 'collapse';
         html.innerHTML = '';
 
@@ -75,43 +83,38 @@ class GridNode extends GraphNode {
     }
 
     visited(): void {
-        const visitedClassname = 'visited';
-        const newlyVisitedClassname = 'newlyvisited';
-        this.html.classList.add(visitedClassname, newlyVisitedClassname);
+        this.html.classList.add(
+            GridNode.HTML_CLASSES.visited,
+            GridNode.HTML_CLASSES.newlyVisited,
+        );
 
         this.timerJobId = setTimeout(() => {
-            this.html.classList.remove(newlyVisitedClassname);
-        }, this.NEW_EXPIRE_DURATION);
+            this.html.classList.remove(GridNode.HTML_CLASSES.newlyVisited);
+        }, GridNode.NEW_EXPIRE_DURATION);
     }
 
     clicked(): void {
-        const clickedClassname = 'clicked';
-        this.html.classList.toggle(clickedClassname);
+        this.html.classList.toggle(GridNode.HTML_CLASSES.clicked);
     }
 
     designateShortestPath(): void {
-        const shortestPathClassname = 'shortest-path';
-        this.html.classList.add(shortestPathClassname);
+        this.html.classList.add(GridNode.HTML_CLASSES.shortestPath);
     }
 
     block(): void {
         super.block();
-        this.html.classList.add('blocked');
+        this.html.classList.add(GridNode.HTML_CLASSES.blocked);
     }
 
     unblock(): void {
         super.unblock();
-        this.html.classList.remove('blocked');
+        this.html.classList.remove(GridNode.HTML_CLASSES.blocked);
     }
 
     reset(): void {
         this.cleanup();
-        const classNamesToRemove = [
-            'visited',
-            'shortest-path',
-            'newlyvisited',
-            'clicked',
-        ];
+        const classNamesToRemove = Object.values(GridNode.HTML_CLASSES)
+            .filter(classname => classname !== GridNode.HTML_CLASSES.blocked);
 
         this.html.classList.remove(...classNamesToRemove);
     }
@@ -130,16 +133,12 @@ class GraphEdge {
 }
 
 class GridGraph {
-    width: number;
-    height: number;
     nodes: GridNode[];
     edges: GraphEdge[];
     nodesClicked: number[];
     private runCallback: () => void = null;
 
-    constructor(width: number, height: number) {
-        this.width = width;
-        this.height = height;
+    constructor(public width: number, public height: number) {
         this.nodes = [];
         this.edges = [];
         this.nodesClicked = [];
@@ -189,9 +188,10 @@ class GridGraph {
 
     drawGraphOnHtml(html: HTMLElement): void {
         let currentRow: HTMLElement;
+        const firstNodeInRow = (nodeIdx: number): boolean => nodeIdx % this.width === 0;
         
         this.nodes.forEach((node, idx) => {
-            if (idx % this.width === 0) {
+            if (firstNodeInRow(idx)) {
                 currentRow && html.appendChild(currentRow);
                 currentRow = document.createElement('div');
                 currentRow.classList.add('nodes-row');

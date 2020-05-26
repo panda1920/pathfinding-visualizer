@@ -34,7 +34,6 @@ class Option<Tenum> {
 }
 
 class Dropdown<Tenum> {
-    // private readonly component: 
     private dropdown: HTMLElement;
     private _component: UIkit.UIkitDropdownElement;
     private options: Option<Tenum>[];
