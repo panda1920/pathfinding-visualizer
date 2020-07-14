@@ -13,14 +13,14 @@ describe('testing behavior of AlgoRunner', () => {
     };
     const algoFactory = (): Algorithm => {
         return new DijkstraAlgorithm(graph);
-    }
+    };
 
     beforeEach(() => {
         jest.useFakeTimers();
 
         graph = new GridGraph(TEST_DATA.width, TEST_DATA.height);
-        graph.nodesClicked.push(TEST_DATA.initialNodeId);
-        graph.nodesClicked.push(TEST_DATA.targetNodeId);
+        graph.nodeIdsClicked.push(TEST_DATA.initialNodeId);
+        graph.nodeIdsClicked.push(TEST_DATA.targetNodeId);
 
         runner = new AlgoRunner(graph, algoFactory);
     });
@@ -34,12 +34,12 @@ describe('testing behavior of AlgoRunner', () => {
         const nodesVisited = [
             graph.nodes[1],
             graph.nodes[3],
-        ]
+        ];
         const nodesShouldNotVisit = [
             graph.nodes[2],
             graph.nodes[4],
             graph.nodes[5],
-        ]
+        ];
         
         runner.run();
         jest.runOnlyPendingTimers();
@@ -59,11 +59,11 @@ describe('testing behavior of AlgoRunner', () => {
 
         nodesVisited.forEach(node => {
             expect( node.html.classList.contains('visited') ).toBe(true);
-        })
+        });
     });
 
     test('run() should throw when clickedNodes < 2', async () => {
-        graph.nodesClicked.pop();
+        graph.nodeIdsClicked.pop();
 
         expect(() => {
             runner.run();
@@ -76,12 +76,12 @@ describe('testing behavior of AlgoRunner', () => {
             while (!completedAlgo.isCompleted)
                 completedAlgo.step();
             return completedAlgo;
-        }
+        };
         runner = new AlgoRunner(graph, completedFactory);
         const fistNodesToVisit = [
             graph.nodes[1],
             graph.nodes[3],
-        ]
+        ];
                 
         runner.run();
 
@@ -112,6 +112,6 @@ describe('testing behavior of AlgoRunner', () => {
                 expect( node.html.classList.contains('shortest-path') ).toBe(true);
             else
                 expect( node.html.classList.contains('shortest-path') ).toBe(false);
-        })
+        });
     });
 });

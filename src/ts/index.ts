@@ -1,6 +1,6 @@
 import { Dropdown } from './dropdown';
 import { GridGraph, BlockedGraph } from './graph';
-import { Algorithm, DijkstraAlgorithm } from './algorithm';
+import { Algorithm, AstarAlgorithm, DijkstraAlgorithm } from './algorithm';
 import { RandomBlocker } from './blocker';
 import { GridSizeChoice, AlgoChoice, createKeysFromEnum } from './enums';
 import AlgoRunner from './runner';
@@ -59,9 +59,12 @@ const appState: AppState = {
     // returns a factory function that produces concrete algorithm object
     algoFactory(): () => Algorithm {
         return (): Algorithm => {
-            switch(appState.algoChoice) {
+            switch (appState.algoChoice) {
                 case AlgoChoice.Dijkstra: {
                     return new DijkstraAlgorithm(appState.graph);
+                }
+                case AlgoChoice.Astar: {
+                    return new AstarAlgorithm(appState.graph);
                 }
                 default:
                     throw 'Undefined algorithm was chosen';

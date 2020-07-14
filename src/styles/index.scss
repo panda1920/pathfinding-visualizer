@@ -69,10 +69,9 @@ header {
     &.visited {
         background-color: $visited-color;
         transition: background-color 0.2s ease-out;
-    
-        &.newlyvisited {
-            background-color: lighten($visited-color, 40);
-        }
+    }
+    &.visited.newlyvisited {
+        background-color: lighten($visited-color, 40);
     }
     &.shortest-path {
         background-color: #a379f1 !important;

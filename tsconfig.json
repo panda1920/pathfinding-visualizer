@@ -6,7 +6,8 @@
         "lib": [ "DOM", "ESNext" ],
         "esModuleInterop": true,
         "sourceMap": true,
-        "noImplicitAny": true
+        "noImplicitAny": true,
+        "moduleResolution": "node",
     },
     "include": [
         "src/ts/*"

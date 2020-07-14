@@ -7,13 +7,15 @@
     "build": "webpack --config webpack.prod.config.js",
     "start": "webpack-dev-server --config webpack.dev.config.js --open",
     "test": "jest",
-    "watch": "jest --watch"
+    "watch": "jest --watch",
+    "clear": "jest --clearCache"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@types/uikit": "^3.3.0",
+    "tinyqueue": "^2.0.3",
     "typescript": "^3.8.3",
     "uikit": "^3.4.4"
   },
@@ -39,7 +41,7 @@
     "ts-loader": "^7.0.1",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.10.3",
+    "webpack-dev-server": "^3.11.0",
     "webpack-merge": "^4.2.2"
   }
 }

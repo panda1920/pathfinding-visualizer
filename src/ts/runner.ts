@@ -8,9 +8,7 @@ class AlgoRunner {
     constructor(
         private graph: GridGraph,
         private algoFactory: () => Algorithm
-    ) {
-
-    }
+    ) {}
 
     run(): void {
         const algo = this.algoFactory();

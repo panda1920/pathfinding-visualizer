@@ -45,7 +45,7 @@ class GraphNode {
 // Diffence between a GraphNode is that
 // GridNode is aware of the fact that it is part of a grid,
 // and that it is going to be represented visually
-class GridNode extends GraphNode {
+export class GridNode extends GraphNode {
     readonly html: HTMLElement;
 
     private static readonly NODE_WIDTH = 32;
@@ -57,13 +57,13 @@ class GridNode extends GraphNode {
         clicked: 'clicked',
         shortestPath: 'shortest-path',
         blocked: 'blocked',
-    }
+    };
     private timerJobId: ReturnType<typeof setTimeout>;
 
     constructor(
         id: number,
-        private readonly gridWidth: number,
-        private readonly gridHeight: number,
+        public readonly x: number,
+        public readonly y: number,
     ) {
         super(id);
 
@@ -83,13 +83,14 @@ class GridNode extends GraphNode {
     }
 
     visited(): void {
-        this.html.classList.add(
-            GridNode.HTML_CLASSES.visited,
-            GridNode.HTML_CLASSES.newlyVisited,
-        );
+        const classes = this.html.classList;
+
+        !classes.contains(GridNode.HTML_CLASSES.visited) && classes.add(GridNode.HTML_CLASSES.visited);
+        !classes.contains(GridNode.HTML_CLASSES.newlyVisited) && classes.add(GridNode.HTML_CLASSES.newlyVisited);
+
 
         this.timerJobId = setTimeout(() => {
-            this.html.classList.remove(GridNode.HTML_CLASSES.newlyVisited);
+            classes.remove(GridNode.HTML_CLASSES.newlyVisited);
         }, GridNode.NEW_EXPIRE_DURATION);
     }
 
@@ -135,13 +136,13 @@ class GraphEdge {
 class GridGraph {
     nodes: GridNode[];
     edges: GraphEdge[];
-    nodesClicked: number[];
+    nodeIdsClicked: number[];
     private runCallback: () => void = null;
 
     constructor(public width: number, public height: number) {
         this.nodes = [];
         this.edges = [];
-        this.nodesClicked = [];
+        this.nodeIdsClicked = [];
 
         this.createNodes();
         this.createEdges();
@@ -151,7 +152,7 @@ class GridGraph {
         for (let y = 0; y < this.height; ++y) {
             for (let x = 0; x < this.width; ++x) {
                 const nodeId = x + (y * this.width);
-                this.nodes.push( new GridNode(nodeId, this.width, this.height) );
+                this.nodes.push( new GridNode(nodeId, x, y) );
             }
         }
     }
@@ -207,25 +208,25 @@ class GridGraph {
     }
 
     private clickHandler = (e: Event): void => {
-        if (this.nodesClicked.length >= 2)
+        if (this.nodeIdsClicked.length >= 2)
             return;
         
         const target = e.target as HTMLElement;
         const id = parseInt( target.id );
         const node = this.nodes[id];
         
-        if (this.nodesClicked.indexOf(id) === -1 && !node.isBlocked)
-            this.nodesClicked.push(id);
+        if (this.nodeIdsClicked.indexOf(id) === -1 && !node.isBlocked)
+            this.nodeIdsClicked.push(id);
         else
-            this.nodesClicked = this.nodesClicked.filter(nodeId => nodeId !== id);
+            this.nodeIdsClicked = this.nodeIdsClicked.filter(nodeId => nodeId !== id);
         node.clicked();
 
-        if (this.nodesClicked.length == 2)
+        if (this.nodeIdsClicked.length == 2)
             this.runCallback && this.runCallback();
     };
 
     reset(): void {
-        this.nodesClicked = [];
+        this.nodeIdsClicked = [];
         this.nodes.forEach(node => {
             node.cleanup();
             node.reset();

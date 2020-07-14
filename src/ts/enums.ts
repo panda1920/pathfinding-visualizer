@@ -5,6 +5,7 @@ enum GridSizeChoice {
 }
 enum AlgoChoice {
     Dijkstra,
+    Astar,
 }
 
 function createKeysFromEnum<T>(e: T): string[] {

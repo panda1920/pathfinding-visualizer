@@ -79,7 +79,7 @@ describe('testing behavior of GridGraph without blockers', () => {
 
         node.html.click();
 
-        expect(graph.nodesClicked).toContain(node.id);
+        expect(graph.nodeIdsClicked).toContain(node.id);
     });
 
     test('should only be able to click up to 2 nodes', () => {
@@ -89,10 +89,10 @@ describe('testing behavior of GridGraph without blockers', () => {
         node2.html.click();
         node3.html.click();
 
-        expect(graph.nodesClicked).toHaveLength(2);
-        expect(graph.nodesClicked).toContain(node1.id);
-        expect(graph.nodesClicked).toContain(node2.id);
-        expect(graph.nodesClicked).not.toContain(node3.id);
+        expect(graph.nodeIdsClicked).toHaveLength(2);
+        expect(graph.nodeIdsClicked).toContain(node1.id);
+        expect(graph.nodeIdsClicked).toContain(node2.id);
+        expect(graph.nodeIdsClicked).not.toContain(node3.id);
         expect(node3.html.classList.contains('clicked')).toBe(false);
     });
 
@@ -102,7 +102,7 @@ describe('testing behavior of GridGraph without blockers', () => {
         node.html.click();
         node.html.click();
 
-        expect(graph.nodesClicked).toHaveLength(0);
+        expect(graph.nodeIdsClicked).toHaveLength(0);
         expect(node.html.classList.contains('clicked')).toBe(false);
     });
 
@@ -113,9 +113,9 @@ describe('testing behavior of GridGraph without blockers', () => {
         node2.html.click();
         node2.html.click();
 
-        expect(graph.nodesClicked).toHaveLength(2);
-        expect(graph.nodesClicked).toContain(node1.id);
-        expect(graph.nodesClicked).toContain(node2.id);
+        expect(graph.nodeIdsClicked).toHaveLength(2);
+        expect(graph.nodeIdsClicked).toContain(node1.id);
+        expect(graph.nodeIdsClicked).toContain(node2.id);
         expect(node1.html.classList.contains('clicked')).toBe(true);
         expect(node2.html.classList.contains('clicked')).toBe(true);
     });
@@ -211,11 +211,11 @@ describe('testing behavior of GridGraph with blockers', () => {
         });
     });
 
-    test('clicking on blocked node should not be included in nodesClicked', () => {
+    test('clicking on blocked node should not be included in nodeIdsClicked', () => {
         const blockedNodeId = TEST_DATA.blockedNodes[0];
         graph.nodes[blockedNodeId].html.click();
 
-        expect(graph.nodesClicked).toHaveLength(0);
+        expect(graph.nodeIdsClicked).toHaveLength(0);
     });
 });
 

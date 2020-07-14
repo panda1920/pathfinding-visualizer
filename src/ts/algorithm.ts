@@ -1,4 +1,6 @@
-import { GridGraph, GraphNode } from './graph';
+import TinyQueue from 'tinyqueue';
+
+import { GridGraph, GraphNode, GridNode } from './graph';
 
 abstract class Algorithm {
     readonly shortestDistances: number[];
@@ -9,9 +11,9 @@ abstract class Algorithm {
     protected constructor(
         protected graph: GridGraph,
     ) {
-        if (graph.nodesClicked.length < 2)
+        if (graph.nodeIdsClicked.length < 2)
             throw 'Graph must have 2 nodes clicked';
-        [ this.initialNodeId, this.targetNodeId ] = graph.nodesClicked;
+        [ this.initialNodeId, this.targetNodeId ] = graph.nodeIdsClicked;
         
         this.shortestDistances = graph.nodes.map(() => Infinity);
         this.shortestDistances[this.initialNodeId] = 0;
@@ -31,16 +33,16 @@ abstract class Algorithm {
 }
 
 class DijkstraAlgorithm extends Algorithm {
-    private unvisitedNodes: Set<number>;
+    private unvisitedNodeIds: Set<number>;
 
     constructor(graph: GridGraph) {
         super(graph);
 
-        this.unvisitedNodes = new Set( graph.nodes.map(node => node.id) );
+        this.unvisitedNodeIds = new Set( graph.nodes.map(node => node.id) );
     }
 
     step(): void {
-        const currentNodeId = this.getCurrentNode();
+        const currentNodeId = this.getNextNodeToTravel().id;
         const newDist = this.shortestDistances[currentNodeId] + 1;
         const attachedNodes = this.graph.nodes[currentNodeId].getAttachedNodes();
         
@@ -69,46 +71,113 @@ class DijkstraAlgorithm extends Algorithm {
         return shortestPath;
     }
 
-    private getCurrentNode(): number {
-        let minId: number;
+    private getNextNodeToTravel(): GraphNode {
         let minDistance = Infinity;
-        const isNotVisited = (nodeId: number): boolean => this.unvisitedNodes.has(nodeId);
+        let nodeWithMinDistance: GraphNode;
+        const isNotVisited = (nodeId: number): boolean => this.unvisitedNodeIds.has(nodeId);
 
         this.shortestDistances.forEach((dist, nodeId) => {
             if ( isNotVisited(nodeId) && dist < minDistance ) {
-                minId = nodeId;
                 minDistance = dist;
+                nodeWithMinDistance = this.graph.nodes[nodeId];
             }
         });
 
-        this.unvisitedNodes.delete(minId);
-        return minId;
+        this.unvisitedNodeIds.delete(nodeWithMinDistance.id);
+        return nodeWithMinDistance;
     }
 
     private determineCompletion(): void {
-        if (!this.unvisitedNodes.has(this.targetNodeId))
+        if (!this.unvisitedNodeIds.has(this.targetNodeId))
             this.complete();
     }
 
     private calculateNextNodeIdInShortestPath(currentNodeId: number): number {
         const neighbors = this.graph.nodes[currentNodeId].getAttachedNodes();
-        return this.getShortestDistanceNode(neighbors).id
+        return this.getShortestDistanceNode(neighbors).id;
     }
 
     private getShortestDistanceNode(nodes: GraphNode[]): GraphNode {
         const distances = nodes.map(node => this.shortestDistances[node.id]);
-        
         let minDistance = Infinity;
-        let minIdx = -1;
-        distances.forEach((distance, idx) => {
-            if (distance < minDistance) {
-                minDistance = distance;
-                minIdx = idx;
+        let minNodeId: number;
+
+        distances.forEach((estimatedDistance, nodeId) => {
+            if (estimatedDistance < minDistance) {
+                minDistance = estimatedDistance;
+                minNodeId = nodeId;
             }
         });
 
-        return nodes[minIdx];
+        return nodes[minNodeId];
     }
 }
 
-export { Algorithm, DijkstraAlgorithm };
+class AstarAlgorithm extends Algorithm {
+    private nodeToVisit: TinyQueue<{ node: GridNode; estimatedDistance: number }>;
+    private previousShortestNode: number[]; // used to trace back nodes for shortest path
+
+    constructor(graph: GridGraph) {
+        super(graph);
+
+        this.previousShortestNode = graph.nodes.map(() => -1);
+        this.nodeToVisit = new TinyQueue([], (a, b) => a.estimatedDistance - b.estimatedDistance);
+        this.enqueNodeIdToVisit(this.initialNodeId);
+    }
+
+    step(): void {
+        const currentNode = this.nodeToVisit.pop().node;
+        if (currentNode.id === this.targetNodeId)
+            return this.complete();
+
+        const neighbors = currentNode.getAttachedNodes();
+
+        for (const neighbor of neighbors) {
+            const distanceToNeighbor = this.shortestDistances[currentNode.id] + 1;
+            if (distanceToNeighbor >= this.shortestDistances[neighbor.id])
+                continue;
+            
+            this.shortestDistances[neighbor.id] = distanceToNeighbor;
+            this.previousShortestNode[neighbor.id] = currentNode.id;
+            this.enqueNodeIdToVisit(neighbor.id);
+        }
+    }
+
+    calculateShortestPath(): number[] {
+        const shortestPath: number[] = [];
+        if (!this.isCompleted)
+            return shortestPath;
+
+        let currentNodeId = this.targetNodeId;
+        
+        while (true) {
+            shortestPath.push(currentNodeId);
+            if (currentNodeId === this.initialNodeId)
+                break;
+            currentNodeId = this.previousShortestNode[currentNodeId];
+        }
+
+        return shortestPath;
+    }
+
+
+    private enqueNodeIdToVisit(nodeId: number): void {
+        const estimatedDistance = this.estimateShortestDistanceToTarget(nodeId) +
+            this.shortestDistances[nodeId];
+        this.nodeToVisit.push({
+            node: this.graph.nodes[nodeId],
+            estimatedDistance: estimatedDistance
+        });
+    }
+
+    private estimateShortestDistanceToTarget(nodeId: number): number {
+        const node = this.graph.nodes[nodeId];
+        const targetNode = this.graph.nodes[this.targetNodeId];
+
+        const shortestDistanceBetween = Math.abs(node.x - targetNode.x)
+            + Math.abs(node.y - targetNode.y);
+        return shortestDistanceBetween;
+    }
+}
+
+export { Algorithm, DijkstraAlgorithm, AstarAlgorithm };
